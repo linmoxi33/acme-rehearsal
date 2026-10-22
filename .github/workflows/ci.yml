@@ -56,8 +56,9 @@ jobs:
       # pytest only compiles the modules it imports. Tools and example scripts
       # can carry invalid escape sequences that never surface until invoked, so
       # every file is compiled explicitly with SyntaxWarning promoted to error.
+      # -W is an *interpreter* flag: it must precede -m, not be passed to compileall.
       - name: Compile everything
-        run: python -m compileall -q -W error::SyntaxWarning src tests tools
+        run: python -W error::SyntaxWarning -m compileall -q src tests tools
 
       - name: Build distributions
         run: |
