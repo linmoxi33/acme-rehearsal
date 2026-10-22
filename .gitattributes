@@ -1,0 +1,12 @@
+# Normalise line endings so hashes and diffs are stable across platforms.
+# The transcript and snapshot code compares bytes; CRLF drift would show up as
+# spurious "changed" entries.
+* text=auto eol=lf
+
+# Generated certificates and keys are binary-ish text that must not be normalised.
+*.pem text eol=lf
+*.crt text eol=lf
+*.key text eol=lf
+
+# Keep the license text byte-identical to upstream.
+LICENSE -text

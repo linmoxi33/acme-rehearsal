@@ -1,0 +1,24 @@
+acme-rehearsal
+Copyright 2026 Vespera
+
+This product references the Certbot project (https://github.com/certbot/certbot),
+Copyright (c) Electronic Frontier Foundation and others, licensed under the
+Apache License, Version 2.0.
+
+No Certbot source code is included in this repository. The reference is
+behavioural only:
+
+  * the on-disk lineage layout (live/, archive/, renewal/) and its field naming,
+  * the actual format of renewal/*.conf, including top-level keys written before
+    any section header,
+  * the semantics of --dry-run and --staging, documented in
+    docs/upstream-findings.md for the purpose of contrast.
+
+The LICENSE file in this repository is the Apache License 2.0 text as
+distributed by the Certbot project. Its SHA-256 is
+09469ed16fa61a319a788800b9ecdfd0a1d6ab8e10e3e17e2c75cd57b1173f71, identical to
+certbot's LICENSE.txt at tag v5.8.0.
+
+The ACME protocol implemented here is specified by RFC 8555. The JWK thumbprint
+algorithm follows RFC 7638 and is verified against that document's worked
+example.
