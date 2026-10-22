@@ -54,12 +54,11 @@ def run_gh(args: list[str], payload: dict | None = None) -> tuple[int, str, str]
     tmp_path = None
     try:
         if payload is not None:
-            handle = tempfile.NamedTemporaryFile(
+            with tempfile.NamedTemporaryFile(
                 "w", suffix=".json", delete=False, encoding="utf-8"
-            )
-            json.dump(payload, handle)
-            handle.close()
-            tmp_path = handle.name
+            ) as handle:
+                json.dump(payload, handle)
+                tmp_path = handle.name
             args = args + ["--input", tmp_path]
         completed = subprocess.run(
             ["gh", *args], capture_output=True, text=True, encoding="utf-8", errors="replace"
