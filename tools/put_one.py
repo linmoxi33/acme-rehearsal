@@ -18,13 +18,34 @@ REPO = "acme-rehearsal"
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def _existing_sha(rel_path: str) -> str | None:
+    """Return the blob sha if the file already exists.
+
+    The Contents API requires ``sha`` when updating; omitting it produces a bare
+    ``"sha" wasn't supplied`` 422 with no hint about which field is missing.
+    """
+    completed = subprocess.run(
+        ["gh", "api", f"repos/{OWNER}/{REPO}/contents/{rel_path}"],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    if completed.returncode != 0:
+        return None
+    return json.loads(completed.stdout).get("sha")
+
+
 def upload(rel_path: str, message: str) -> None:
     local = ROOT / rel_path
-    payload = {
+    payload: dict[str, str] = {
         "message": message,
         "content": base64.b64encode(local.read_bytes()).decode(),
         "branch": "main",
     }
+    existing = _existing_sha(rel_path)
+    if existing:
+        payload["sha"] = existing
     with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as fh:
         json.dump(payload, fh)
         tmp = fh.name
