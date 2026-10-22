@@ -1,5 +1,9 @@
 # acme-rehearsal
 
+[![CI](https://github.com/linmoxi33/acme-rehearsal/actions/workflows/ci.yml/badge.svg)](https://github.com/linmoxi33/acme-rehearsal/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/linmoxi33/acme-rehearsal)](https://github.com/linmoxi33/acme-rehearsal/releases)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
+
 **在完全离线的沙盒里，把 ACME 证书的签发、续期、吊销完整排练一遍——包括每一步的输入、输出和证据。**
 
 围绕 [`certbot`](https://github.com/certbot/certbot)（EFF，Apache-2.0，5.8.0）的真实语义构建。不 fork 它的代码，而是复刻它面对的那套协议，然后把整个过程关进一个能证明"什么都没漏出去"的盒子里。
