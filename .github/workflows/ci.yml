@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: ${{ matrix.os }} / py${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      # Exit code is what matters here, not the output: a green run that skipped
+      # the interesting paths is worse than a red one.
+      - name: Tests
+        run: python -m pytest tests -q
+
+  quality:
+    name: static checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Ruff
+        run: ruff check src tests tools
+
+      # pytest only compiles the modules it imports. Tools and example scripts
+      # can carry invalid escape sequences that never surface until invoked, so
+      # every file is compiled explicitly with SyntaxWarning promoted to error.
+      - name: Compile everything
+        run: python -m compileall -q -W error::SyntaxWarning src tests tools
+
+      - name: Build distributions
+        run: |
+          pip install build
+          python -m build --wheel --sdist
+
+      - name: Verify wheel contents
+        run: python tools/check_wheel.py
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: distributions
+          path: dist/*
+          retention-days: 7
